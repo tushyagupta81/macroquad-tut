@@ -32,7 +32,7 @@ async fn main() {
         }
 
         for square in &mut squares {
-            square.y = square.speed * delta;
+            square.y += square.speed * delta;
         }
         squares.retain(|square| square.y < screen_height() + square.size);
 
