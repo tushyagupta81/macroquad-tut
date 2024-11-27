@@ -172,6 +172,7 @@ async fn main() {
             bullets.clear();
             prev_time = get_time();
             score = 0;
+            old_high_score = high_score;
             circle.x = screen_width() / 2.0;
             circle.y = screen_height() / 2.0;
             gameover = false;
