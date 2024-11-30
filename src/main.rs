@@ -79,6 +79,15 @@ async fn main() {
                     50.0,
                     WHITE,
                 );
+                let text = "Press Escape to Exit";
+                let text_dimensions = measure_text(text, None, 30, 1.0);
+                draw_text(
+                    text,
+                    screen_width() / 2.0 - text_dimensions.width / 2.0,
+                    screen_height() / 1.8,
+                    30.0,
+                    WHITE,
+                );
             }
             GameState::GameOver => {
                 let text = "GAME OVER!";
@@ -89,6 +98,24 @@ async fn main() {
                     screen_height() / 2.0,
                     50.0,
                     RED,
+                );
+                let text = "Press Enter to Play again";
+                let text_dimensions = measure_text(text, None, 30, 1.0);
+                draw_text(
+                    text,
+                    screen_width() / 2.0 - text_dimensions.width / 2.0,
+                    screen_height() / 1.8,
+                    30.0,
+                    WHITE,
+                );
+                let text = "Press Escape to Exit";
+                let text_dimensions = measure_text(text, None, 30, 1.0);
+                draw_text(
+                    text,
+                    screen_width() / 2.0 - text_dimensions.width / 2.0,
+                    screen_height() / 1.65,
+                    30.0,
+                    WHITE,
                 );
                 if old_high_score < high_score {
                     let text = format!("New high Score: {}", high_score);
@@ -101,8 +128,11 @@ async fn main() {
                         RED,
                     );
                 }
-                if is_key_down(KeyCode::Space) {
+                if is_key_down(KeyCode::Enter) {
                     game_state = GameState::MainMenu;
+                }
+                if is_key_down(KeyCode::Escape) {
+                    std::process::exit(0);
                 }
             }
             GameState::Paused => {
