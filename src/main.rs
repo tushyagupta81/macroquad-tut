@@ -1,5 +1,7 @@
 use macroquad::audio::{load_sound, play_sound, play_sound_once, PlaySoundParams, Sound};
 use macroquad::experimental::animation::{AnimatedSprite, Animation};
+use macroquad::experimental::collections::storage;
+use macroquad::experimental::coroutines::start_coroutine;
 use macroquad::prelude::*;
 use macroquad::ui::{hash, root_ui, Skin};
 use macroquad_particles::{self as particles, AtlasConfig, Emitter, EmitterConfig};
@@ -118,6 +120,30 @@ impl Resources {
             ui_skin,
         })
     }
+    pub async fn load() -> Result<(), macroquad::Error> {
+        let resources_loading = start_coroutine(async move {
+            let resources = Resources::new().await.unwrap();
+            storage::store(resources);
+        });
+
+        while !resources_loading.is_done() {
+            clear_background(BLACK);
+            let text = format!(
+                "Loading resources {}",
+                ".".repeat(((get_time() * 2.) as usize) % 4)
+            );
+            draw_text(
+                &text,
+                screen_width() / 2. - 160.,
+                screen_height() / 2.,
+                40.,
+                WHITE,
+            );
+            next_frame().await;
+        }
+
+        Ok(())
+    }
 }
 
 fn particle_explosion() -> particles::EmitterConfig {
@@ -201,7 +227,8 @@ async fn main() -> Result<(), macroquad::Error> {
     let mut old_high_score: u32 = high_score.clone();
 
     set_pc_assets_folder("assets");
-    let resources = Resources::new().await?;
+    Resources::load().await?;
+    let resources = storage::get::<Resources>();
 
     root_ui().push_skin(&resources.ui_skin);
     let window_size = vec2(370.0, 320.0);
