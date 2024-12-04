@@ -352,63 +352,54 @@ async fn main() -> Result<(), macroquad::Error> {
                 );
             }
             GameState::GameOver => {
-                let text = "GAME OVER!";
-                let text_dimensions = measure_text(text, None, 50, 1.0);
-                draw_text(
-                    text,
-                    screen_width() / 2.0 - text_dimensions.width / 2.0,
-                    screen_height() / 2.0,
-                    50.0,
-                    RED,
-                );
-                let text = "Press Enter to Main Menu";
-                let text_dimensions = measure_text(text, None, 30, 1.0);
-                draw_text(
-                    text,
-                    screen_width() / 2.0 - text_dimensions.width / 2.0,
-                    screen_height() / 1.8,
-                    30.0,
-                    WHITE,
-                );
-                let text = "Press Escape to Exit";
-                let text_dimensions = measure_text(text, None, 30, 1.0);
-                draw_text(
-                    text,
-                    screen_width() / 2.0 - text_dimensions.width / 2.0,
-                    screen_height() / 1.65,
-                    30.0,
-                    WHITE,
-                );
+                let mut offset = 0.0;
                 if old_high_score < high_score {
-                    let text = format!("New high Score: {}", high_score);
-                    let text_dimensions = measure_text(text.as_str(), None, 36, 1.0);
-                    draw_text(
-                        text.as_str(),
-                        screen_width() / 2.0 - text_dimensions.width / 2.0,
-                        screen_height() / 2.3,
-                        36.0,
-                        RED,
-                    );
+                    offset = 50.0;
                 }
-                if is_key_down(KeyCode::Enter) {
-                    game_state = GameState::MainMenu;
-                }
-                if is_key_down(KeyCode::Escape) {
-                    std::process::exit(0);
-                }
+                let text = format!("New High Score {} !", high_score);
+                let text_dimensions = measure_text(text.as_str(), None, 35, 1.0);
+
+                root_ui().window(
+                    hash!(),
+                    vec2(
+                        screen_width() / 2.0 - 500.0 / 2.0,
+                        screen_height() / 2.0 - (320.0 + offset) / 2.0,
+                    ),
+                    vec2(500.0, 320.0 + offset),
+                    |ui| {
+                        ui.label(vec2(155., -34.0), "Game Over!");
+                        if ui.button(vec2(55.0, 25.0), "Main Menu") {
+                            game_state = GameState::MainMenu;
+                        }
+                        if ui.button(vec2(135.0, 125.0), "Quit") {
+                            std::process::exit(0);
+                        }
+                        if offset > 0.0 {
+                            ui.label(
+                                vec2(500.0 / 2.0 - text_dimensions.width / 2.0, 225.0),
+                                text.as_str(),
+                            );
+                        }
+                    },
+                );
             }
             GameState::Paused => {
-                if is_key_down(KeyCode::Space) {
-                    game_state = GameState::Playing;
-                }
-                let text = "Paused";
-                let text_dimensions = measure_text(text, None, 50, 1.0);
-                draw_text(
-                    text,
-                    screen_width() / 2.0 - text_dimensions.width / 2.0,
-                    screen_height() / 2.0,
-                    50.0,
-                    WHITE,
+                root_ui().window(
+                    hash!(),
+                    vec2(
+                        screen_width() / 2.0 - window_size.x / 2.0,
+                        screen_height() / 2.0 - window_size.y / 2.0,
+                    ),
+                    window_size,
+                    |ui| {
+                        ui.label(vec2(110.0, -34.0), "Paused");
+                        if ui.button(vec2(35.0, 25.0), "Resume") {
+                            game_state = GameState::Playing;
+                        }
+                        if ui.button(vec2(65.0, 125.0), "Quit") {
+                            std::process::exit(0);
+                        }
+                    },
                 );
             }
             GameState::Playing => {
